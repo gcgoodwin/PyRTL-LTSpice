@@ -1,0 +1,18 @@
+import pyrtl
+from ltspice_pyrtl_lib import full_adder
+
+pyrtl.reset_working_block()
+
+A = pyrtl.Input(1, "A")
+B = pyrtl.Input(1, "B")
+Cin = pyrtl.Input(1, "Cin")
+
+SUM = pyrtl.Output(1, "SUM")
+Cout = pyrtl.Output(1, "Cout")
+
+s, cout = full_adder(A, B, Cin, name="fa0")
+
+SUM <<= s
+Cout <<= cout
+
+print(pyrtl.working_block())
