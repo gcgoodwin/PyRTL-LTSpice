@@ -1,0 +1,74 @@
+* ltspice_half_adder_demo.cir
+* A complete LTspice simulation deck: no schematic drawing required.
+* Open this file and run LTspice
+* Then plot: V(A), V(B), V(SUM), V(CARRY)
+* 1) POWER SUPPLY
+
+VDD_SOURCE VDD 0 5
+
+* 2) VOLATGE PULSES
+VA A 0 PULSE(0 5 0 1n 1n 10u 20u)
+VB B 0 PULSE(0 5 0 1n 1n 20u 40u)
+
+
+* 3) HALF ADDER CIRCUIT
+
+
+XSUM   A B SUM   VDD 0 XOR2
+XCARRY A B CARRY VDD 0 AND2
+
+* Output loads 
+CSUM   SUM   0 10f
+CCARRY CARRY 0 10f
+RSUM   SUM   0 100Meg
+RCARRY CARRY 0 100Meg
+
+* 4) SIMULATION COMMAND
+* Run a transient simulation from 0 to 80 microseconds.
+.tran 0 80u 0 5n
+
+* Save these node voltages for the waveform viewer.
+.save V(A) V(B) V(SUM) V(CARRY)
+
+* 5) TRANSISTOR MODELS
+
+.model NMOS NMOS (LEVEL=1 VTO=0.7 KP=120u LAMBDA=0.02)
+.model PMOS PMOS (LEVEL=1 VTO=-0.7 KP=60u LAMBDA=0.02)
+
+
+* 6) TRANSISTOR-LEVEL GATE LIBRARY
+
+
+* Inverter
+* Pin order: IN OUT VDD VSS
+.subckt INV IN OUT VDD VSS
+MP1 OUT IN VDD VDD PMOS W=4u L=180n
+MN1 OUT IN VSS VSS NMOS W=2u L=180n
+.ends INV
+
+* NAND gate
+* Pin order: A B Y VDD VSS
+.subckt NAND2 A B Y VDD VSS
+MP1 Y A VDD VDD PMOS W=4u L=180n
+MP2 Y B VDD VDD PMOS W=4u L=180n
+MN1 Y A NINT VSS NMOS W=2u L=180n
+MN2 NINT B VSS VSS NMOS W=2u L=180n
+.ends NAND2
+
+* AND gate = NAND + inverter
+* Pin order: A B Y VDD VSS
+.subckt AND2 A B Y VDD VSS
+XNAND A B N_NAND VDD VSS NAND2
+XINV  N_NAND Y VDD VSS INV
+.ends AND2
+
+* XOR gate built from four NAND gates
+* Pin order: A B Y VDD VSS
+.subckt XOR2 A B Y VDD VSS
+XN1 A  B  N1 VDD VSS NAND2
+XN2 A  N1 N2 VDD VSS NAND2
+XN3 B  N1 N3 VDD VSS NAND2
+XN4 N2 N3 Y  VDD VSS NAND2
+.ends XOR2
+
+.end
