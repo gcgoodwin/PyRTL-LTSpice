@@ -1,5 +1,4 @@
-# PyRTL-LTSpice
-A small proof-of-concept for converting simple PyRTL combinational circuits into LTspice .cir simulation files using transistor-level gate subcircuits.
+
 # PyRTL to LTspice Demo
 
 This is a small proof-of-concept for generating LTspice `.cir` simulation files from simple PyRTL combinational circuits.
