@@ -1,3 +1,17 @@
+# pyrtl_to_ltspice.py
+#
+# Minimal PyRTL -> LTspice .cir converter.
+#
+# Usage from another PyRTL file:
+#
+#   import pyrtl
+#   from pyrtl_to_ltspice import convert_working_block_to_ltspice
+#
+#   ... define PyRTL circuit ...
+#
+#   convert_working_block_to_ltspice("full_adder_generated.cir")
+
+import os
 import re
 import pyrtl
 
@@ -6,44 +20,62 @@ GATE_MAP = {
     "&": "AND2",
     "|": "OR2",
     "^": "XOR2",
-    "~": "INV",
-    "n": "INV",   # some PyRTL versions may use this for NOT
+    "n": "NAND2",
 }
 
 
-def clean_name(name: str) -> str:
-    """Make a PyRTL wire name safe-ish for SPICE node names."""
+def clean_name(name):
+    """
+    Make a PyRTL wire name safe for SPICE.
+    """
     name = str(name)
-    name = re.sub(r"[^a-zA-Z0-9_]", "_", name)
-    if name[0].isdigit():
-        name = "n_" + name
-    return name
+    name = name.replace("[", "_").replace("]", "")
+    name = name.replace("/", "_")
+    name = re.sub(r"[^A-Za-z0-9_]", "_", name)
 
-
-def node_name(wire, aliases):
-    """Return final SPICE node name for a PyRTL wire."""
-    name = clean_name(wire.name)
-
-    # Follow simple wire aliases like tmp0 -> SUM
-    seen = set()
-    while name in aliases and name not in seen:
-        seen.add(name)
-        name = aliases[name]
+    # SPICE node names should not be empty.
+    if not name:
+        name = "unnamed_node"
 
     return name
 
+def preprocess_block(block, remove_wire_nets=False, synthesize=False):
+    """
+    Optionally run PyRTL cleanup/lowering passes before LTspice conversion.
 
-def gate_library() -> str:
-    return r"""
-* ============================================================
-* TRANSISTOR MODELS
-* ============================================================
+    remove_wire_nets:
+        Uses PyRTL's internal _remove_wire_nets pass to simplify direct wire nets.
+
+    synthesize:
+        Lowers more complex PyRTL operations into a simpler gate-level form.
+        merge_io_vectors=False helps expose individual input/output bits instead
+        of reassembling them into multi-bit buses.
+    """
+
+    if synthesize:
+        block = pyrtl.synthesize(
+            update_working_block=False,
+            merge_io_vectors=False,
+            block=block,
+        )
+
+    if remove_wire_nets:
+        pyrtl.passes._remove_wire_nets(block, skip_sanity_check=True)
+
+    return block
+
+def write_gate_library(f):
+    """
+    Write transistor models and gate subcircuits.
+    """
+    f.write(r"""
+* 5) TRANSISTOR MODELS
+
 .model NMOS NMOS (LEVEL=1 VTO=0.7 KP=120u LAMBDA=0.02)
 .model PMOS PMOS (LEVEL=1 VTO=-0.7 KP=60u LAMBDA=0.02)
 
-* ============================================================
-* TRANSISTOR-LEVEL GATE LIBRARY
-* ============================================================
+
+* 6) TRANSISTOR-LEVEL GATE LIBRARY
 
 * Inverter
 * Pin order: IN OUT VDD VSS
@@ -51,6 +83,7 @@ def gate_library() -> str:
 MP1 OUT IN VDD VDD PMOS W=20u L=1u
 MN1 OUT IN VSS VSS NMOS W=10u L=1u
 .ends INV
+
 
 * NAND gate
 * Pin order: A B Y VDD VSS
@@ -61,12 +94,14 @@ MN1 Y A NINT VSS NMOS W=10u L=1u
 MN2 NINT B VSS VSS NMOS W=10u L=1u
 .ends NAND2
 
+
 * AND gate = NAND + inverter
 * Pin order: A B Y VDD VSS
 .subckt AND2 A B Y VDD VSS
 XNAND A B N_NAND VDD VSS NAND2
 XINV  N_NAND Y VDD VSS INV
 .ends AND2
+
 
 * NOR gate
 * Pin order: A B Y VDD VSS
@@ -77,12 +112,14 @@ MN1 Y A VSS VSS NMOS W=10u L=1u
 MN2 Y B VSS VSS NMOS W=10u L=1u
 .ends NOR2
 
+
 * OR gate = NOR + inverter
 * Pin order: A B Y VDD VSS
 .subckt OR2 A B Y VDD VSS
 XNOR A B N_NOR VDD VSS NOR2
 XINV N_NOR Y VDD VSS INV
 .ends OR2
+
 
 * XOR gate built from four NAND gates
 * Pin order: A B Y VDD VSS
@@ -92,141 +129,143 @@ XN2 A  N1 N2 VDD VSS NAND2
 XN3 B  N1 N3 VDD VSS NAND2
 XN4 N2 N3 Y  VDD VSS NAND2
 .ends XOR2
-"""
 
-def convert_working_block_to_ltspice(filename="generated_from_pyrtl.cir"):
-    block = pyrtl.working_block()
+""")
+def convert_working_block_to_ltspice(
+    output_filename,
+    block=None,
+    remove_wire_nets=False,
+    synthesize=False,
+):
+    """
+    Convert the current PyRTL working block into an LTspice .cir file.
 
-    inputs = sorted(block.wirevector_subset(pyrtl.Input), key=lambda w: w.name)
-    outputs = sorted(block.wirevector_subset(pyrtl.Output), key=lambda w: w.name)
+    This function assumes the PyRTL circuit is already defined.
+    It does NOT run user code through exec().
+    """
 
-    # MVP rule: only support 1-bit inputs/outputs for now
-    for w in list(inputs) + list(outputs):
-        if len(w) != 1:
-            raise NotImplementedError(
-                f"Wire {w.name} has width {len(w)}. This MVP only supports 1-bit wires."
+    if block is None:
+        block = pyrtl.working_block()
+
+    # Optional preprocessing. Keep these off at first while debugging.
+    block = preprocess_block(
+        block,
+        remove_wire_nets=remove_wire_nets,
+        synthesize=synthesize,
+    )
+
+    output_dir = os.path.dirname(output_filename)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+
+    inputs = sorted(
+        [w for w in block.wirevector_set if isinstance(w, pyrtl.Input)],
+        key=lambda w: w.name,
+    )
+
+    outputs = sorted(
+        [w for w in block.wirevector_set if isinstance(w, pyrtl.Output)],
+        key=lambda w: w.name,
+    )
+
+    with open(output_filename, "w") as f:
+        f.write(f"* {os.path.basename(output_filename)}\n")
+        f.write("* Generated from a PyRTL working block.\n")
+        f.write("* Open this file in LTspice and run.\n")
+
+        if inputs or outputs:
+            plot_nodes = [clean_name(w.name) for w in inputs + outputs]
+            f.write("* Suggested plot nodes: ")
+            f.write(", ".join(f"V({n})" for n in plot_nodes))
+            f.write("\n")
+
+        f.write("\n\n* 1) POWER SUPPLY\n\n")
+        f.write("VDD_SOURCE VDD 0 5\n")
+
+        f.write("\n\n* 2) INPUT VOLTAGE PULSES\n\n")
+
+        base_period = 20
+
+        for i, wire in enumerate(inputs):
+            name = clean_name(wire.name)
+            period = base_period * (2 ** i)
+            high_time = period / 2
+
+            f.write(
+                f"V{name} {name} 0 "
+                f"PULSE(0 5 1u 50n 50n {high_time}u {period}u)\n"
             )
 
-    # Build alias table for simple wire connections.
-    # PyRTL often creates:
-    # SUM <-- w -- tmp0
-    # We want the gate output node to become SUM instead of tmp0.
-    aliases = {}
-    for net in block.logic:
-        if net.op == "w":
-            src = clean_name(net.args[0].name)
-            dst = clean_name(net.dests[0].name)
-            aliases[src] = dst
+        f.write("\n\n* 3) GENERATED CIRCUIT\n\n")
 
-    lines = []
-    lines.append("* Auto-generated LTspice .cir file from PyRTL")
-    lines.append("* MVP: supports 1-bit combinational &, |, ^, ~ gates")
-    lines.append("")
-    lines.append("* ============================================================")
-    lines.append("* POWER SUPPLY")
-    lines.append("* ============================================================")
-    lines.append("VDD_SOURCE VDD 0 5")
-    lines.append("")
+        gate_count = 0
+        wire_count = 0
 
-    lines.append("* ============================================================")
-    lines.append("* INPUT PULSES")
-    lines.append("* ============================================================")
+        for net in block.logic:
+            # PyRTL wire net: connect one wire to another wire.
+            # Example:
+            # tmp0 -> ha0_sum -> SUM
+            if net.op == "w":
+                wire_count += 1
+                src = clean_name(net.args[0].name)
+                dst = clean_name(net.dests[0].name)
 
-    # Generate automatic truth-table-ish pulses
-    for i, inp in enumerate(inputs):
-        name = clean_name(inp.name)
-        high_time = 10 * (2 ** i)
-        period = 20 * (2 ** i)
-        lines.append(f"V{name} {name} 0 PULSE(0 5 0 1n 1n {high_time}u {period}u)")
+                if src != dst:
+                    f.write(f"VWIRE{wire_count} {src} {dst} 0\n")
 
-    lines.append("")
-    lines.append("* ============================================================")
-    lines.append("* GATE INSTANCES FROM PYRTL NETLIST")
-    lines.append("* ============================================================")
+                continue
 
-    gate_count = 0
-
-    for net in block.logic:
-        op = net.op
-
-        # Skip simple wire aliases because aliases handled above
-        if op == "w":
-            continue
-
-        if op not in GATE_MAP:
-            raise NotImplementedError(
-                f"Unsupported PyRTL operation {op!r} in net: {net}"
-            )
-
-        gate_count += 1
-        subckt = GATE_MAP[op]
-        out_node = node_name(net.dests[0], aliases)
-
-        for w in list(net.args) + list(net.dests):
-            if len(w) != 1:
+            if net.op not in GATE_MAP and net.op != "~":
                 raise NotImplementedError(
-                    f"Wire {w.name} has width {len(w)}. This MVP only supports 1-bit gates."
+                    f"Unsupported PyRTL op '{net.op}' in net: {net}\n"
+                    "Current converter only supports &, |, ^, ~, n, and wire nets."
                 )
 
-        if subckt == "INV":
-            in_node = node_name(net.args[0], aliases)
-            lines.append(f"XG{gate_count}_{subckt} {in_node} {out_node} VDD 0 {subckt}")
-        else:
-            in1 = node_name(net.args[0], aliases)
-            in2 = node_name(net.args[1], aliases)
-            lines.append(f"XG{gate_count}_{subckt} {in1} {in2} {out_node} VDD 0 {subckt}")
+            gate_count += 1
+            dest = clean_name(net.dests[0].name)
 
-    lines.append("")
-    lines.append("* ============================================================")
-    lines.append("* OUTPUT LOADS")
-    lines.append("* ============================================================")
+            # Unary inverter
+            if net.op == "~":
+                a = clean_name(net.args[0].name)
+                f.write(f"XG{gate_count}_INV {a} {dest} VDD 0 INV\n")
 
-    for out in outputs:
-        name = clean_name(out.name)
-        lines.append(f"C{name} {name} 0 10f")
-        lines.append(f"R{name} {name} 0 100Meg")
+            # Binary gates: AND, OR, XOR, NAND
+            else:
+                if len(net.args) != 2:
+                    raise NotImplementedError(
+                        f"Unsupported PyRTL net with {len(net.args)} inputs: {net}"
+                    )
 
-    lines.append("")
-    lines.append("* ============================================================")
-    lines.append("* SIMULATION COMMAND")
-    lines.append("* ============================================================")
-    lines.append(".tran 0 80u 0 5n")
+                spice_gate = GATE_MAP[net.op]
+                a = clean_name(net.args[0].name)
+                b = clean_name(net.args[1].name)
 
-    save_nodes = [clean_name(w.name) for w in inputs + outputs]
-    save_line = ".save " + " ".join(f"V({n})" for n in save_nodes)
-    lines.append(save_line)
+                f.write(
+                    f"XG{gate_count}_{spice_gate} "
+                    f"{a} {b} {dest} VDD 0 {spice_gate}\n"
+                )
 
-    lines.append(gate_library())
-    lines.append(".end")
+        f.write("\n\n* Output loads\n\n")
 
-    cir_text = "\n".join(lines)
+        for wire in outputs:
+            name = clean_name(wire.name)
+            f.write(f"CLOAD_{name} {name} 0 10f\n")
+            f.write(f"RLOAD_{name} {name} 0 100Meg\n")
 
-    with open(filename, "w") as f:
-        f.write(cir_text)
+        f.write("\n\n* 4) SIMULATION COMMAND\n\n")
+        f.write(".options reltol=0.01 abstol=1n vntol=1m method=gear\n")
+        f.write(".tran 0 80u 0 100n\n")
 
-    print(f"Wrote {filename}")
-    return cir_text
+        if inputs or outputs:
+            save_nodes = [clean_name(w.name) for w in inputs + outputs]
+            f.write(".save ")
+            f.write(" ".join(f"V({n})" for n in save_nodes))
+            f.write("\n")
 
+        write_gate_library(f)
 
-def run_user_pyrtl_code_and_convert(user_code: str, filename="generated_from_pyrtl.cir"):
-    """
-    Runs trusted local PyRTL code and converts the resulting PyRTL working block to LTspice.
+        f.write(".end\n")
 
-    Do not use this on random internet code because exec() runs Python.
-    For your own local experiments, it is fine.
-    """
-    pyrtl.reset_working_block()
+    print(f"Wrote LTspice file: {output_filename}")
+    return output_filename
 
-    namespace = {
-        "pyrtl": pyrtl,
-    }
-
-    exec(user_code, namespace)
-
-    return convert_working_block_to_ltspice(filename)
-if __name__ == "__main__":
-    USER_CODE = r'''
-# INPUT THE PYRTL CODE
-'''
-
-    run_user_pyrtl_code_and_convert(USER_CODE, "CIRCUIT_generated.cir")
