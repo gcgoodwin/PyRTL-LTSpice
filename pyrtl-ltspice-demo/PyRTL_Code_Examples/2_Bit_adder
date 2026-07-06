@@ -1,0 +1,19 @@
+import pyrtl
+from ConverterV2 import convert_working_block_to_ltspice
+
+pyrtl.reset_working_block()
+
+A = pyrtl.Input(2, "A")
+B = pyrtl.Input(2, "B")
+
+SUM = pyrtl.Output(3, "SUM")
+
+SUM <<= A + B
+
+print("Before synth:")
+print(pyrtl.working_block())
+
+convert_working_block_to_ltspice(
+    "generated/two_bit_add_synth.cir",
+    synthesize=True,
+)
