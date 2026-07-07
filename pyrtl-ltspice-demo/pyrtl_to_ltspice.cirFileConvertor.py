@@ -1,15 +1,7 @@
 # pyrtl_to_ltspice.py
-#
-# Minimal PyRTL -> LTspice .cir converter.
-#
 # Usage from another PyRTL file:
 #
-#   import pyrtl
-#   from pyrtl_to_ltspice import convert_working_block_to_ltspice
-#
-#   ... define PyRTL circuit ...
-#
-#   convert_working_block_to_ltspice("full_adder_generated.cir")
+
 
 import os
 import re
@@ -266,6 +258,6 @@ def convert_working_block_to_ltspice(
 
         f.write(".end\n")
 
-    print(f"Wrote LTspice file: {output_filename}")
+    print(f"Wrote LTspice file: result.cir")
     return output_filename
 
