@@ -258,6 +258,6 @@ def convert_working_block_to_ltspice(
 
         f.write(".end\n")
 
-    print(f"Wrote LTspice file: result.cir")
+    print(f"Wrote LTspice file: {output_filename}")
     return output_filename
 
