@@ -1,0 +1,168 @@
+LTspice 26.0.2 for Windows
+Circuit: C:\Users\qy6b\Downloads\generated\two_bit_adder_no_synthesis.cir
+Start Time: Tue Jul  7 08:55:37 2026
+Options:reltol=0.01 abstol=1n vntol=1m method=gear
+solver = Normal
+Maximum thread count: 8
+tnom = 27
+temp = 27
+method = Gear
+abstol = 1e-09
+reltol = 0.01
+volttol = 0.001
+Instance "xg1_and2:xnand:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xnand:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xnand:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xnand:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MN2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MN2": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xinv:MN1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xinv:MN1": Width narrower than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xnand:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xnand:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg1_and2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn1:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn2:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn3:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg2_xor2:xn4:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xnand:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg3_and2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn1:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn2:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn3:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg4_xor2:xn4:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xnor:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg5_or2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn1:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn2:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn3:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg6_xor2:xn4:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xnor:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg7_or2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn1:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn2:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn3:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg8_xor2:xn4:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xnand:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg9_and2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MP1": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xnand:MP2": Length shorter than recommended for a level 1 MOSFET.
+Instance "xg10_and2:xinv:MP1": Length shorter than recommended for a level 1 MOSFET.
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 1.388 seconds.
+
+Files loaded:
+C:\Users\qy6b\Downloads\generated\two_bit_adder_no_synthesis.cir
+
