@@ -1,6 +1,6 @@
 import pyrtl
 from ltspice_pyrtl_lib import full_adder
-from pyrtl_to_ltspice import convert_working_block_to_ltspice
+from ConvertorV3 import convert_working_block_to_ltspice
 
 pyrtl.reset_working_block()
 
