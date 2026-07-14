@@ -1,0 +1,48 @@
+import pyrtl
+
+from ConvertorV3 import (
+    LtspiceConfig,
+    convert_working_block_to_ltspice,
+)
+
+
+pyrtl.reset_working_block()
+
+# Four-bit state register.
+counter = pyrtl.Register(
+    bitwidth=4,
+    name="counter",
+    reset_value=0,
+)
+
+# Visible output.
+COUNT = pyrtl.Output(
+    bitwidth=4,
+    name="COUNT",
+)
+
+# Increment on every rising clock edge.
+# PyRTL automatically truncates the result back to four bits,
+# so 1111 + 1 wraps around to 0000.
+counter.next <<= counter + 1
+
+COUNT <<= counter
+
+
+print("PyRTL circuit:")
+print(pyrtl.working_block())
+
+
+config = LtspiceConfig(
+    simulation_time_us=100,
+    clock_period_us=10,
+    clock_delay_us=5,
+    clock_high_us=5,
+    max_timestep_ns=100,
+)
+
+convert_working_block_to_ltspice(
+    output_filename="generated/four_bit_counter.cir",
+    synthesize=False,
+    config=config,
+)
