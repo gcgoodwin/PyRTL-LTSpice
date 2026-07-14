@@ -1,0 +1,20 @@
+import pyrtl
+from ConvertorV3 import LtspiceConfig, convert_working_block_to_ltspice
+
+pyrtl.reset_working_block()
+
+D = pyrtl.Input(1, "D")
+LOAD = pyrtl.Input(1, "LOAD")
+Q = pyrtl.Output(1, "Q")
+
+register = pyrtl.Register(1, "REG", reset_value=0)
+register.next <<= pyrtl.select(LOAD, falsecase=register, truecase=D)
+Q <<= register
+
+convert_working_block_to_ltspice(
+    "generated/bit_register_with_load.cir",
+    # Direct mapping preserves the PyRTL mux as MUX2 cells and the register
+    # as eight DFF cells.
+    synthesize=False,
+    config=LtspiceConfig(simulation_time_us=120),
+)
