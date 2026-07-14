@@ -1,5 +1,5 @@
 import pyrtl
-from ConverterV2 import convert_working_block_to_ltspice
+from ConverterV3 import convert_working_block_to_ltspice
 
 pyrtl.reset_working_block()
 
