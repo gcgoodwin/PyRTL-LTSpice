@@ -1,0 +1,172 @@
+* bit_register_with_load.cir
+* Generated from a PyRTL working block.
+* Transistor-level cells are embedded at the end of this file.
+* Supported: combinational logic, muxes, arithmetic, comparisons, and registers.
+* Registers are positive-edge-triggered and share CLK.
+* Suggested plot nodes: V(D), V(LOAD), V(Q), V(CLK)
+
+
+* 1) POWER SUPPLY
+
+VDD_SOURCE VDD 0 5
+
+* Shared positive-edge clock
+VCLK CLK 0 PULSE(0 5 5u 50n 50n 5u 10u)
+VINIT INIT 0 PWL(0 5 6u 5 6.05u 0)
+
+
+* 2) INPUT VOLTAGE PULSES
+
+VINPUT_D D 0 PULSE(0 5 12u 50n 50n 10u 20u)
+VINPUT_LOAD LOAD 0 PULSE(0 5 12u 50n 50n 20u 40u)
+
+
+* 3) GENERATED CIRCUIT
+
+EWIRE_1 Q 0 REG 0 1
+XREG_INIT_2 tmp0 0 INIT __REG_dinit_0_1 VDD 0 MUX2
+XDFF_REG_0_3 __REG_dinit_0_1 REG CLK VDD 0 DFF
+.ic V(REG)=0
+XMUX_4 REG D LOAD tmp0 VDD 0 MUX2
+
+
+* Output loads
+
+CLOAD_Q Q 0 10f
+RLOAD_Q Q 0 100Meg
+
+
+* 4) SIMULATION COMMAND
+
+.options reltol=0.01 abstol=1n vntol=1m method=gear gshunt=1e-12 cshunt=1f
+.tran 0 120u 0 100n uic
+.save V(D) V(LOAD) V(Q) V(CLK) V(INIT)
+
+
+* 5) TRANSISTOR MODELS
+
+* Conservative long-channel dimensions are used with these Level-1 models.
+.model NMOS NMOS (LEVEL=1 VTO=0.7 KP=120u LAMBDA=0.02)
+.model PMOS PMOS (LEVEL=1 VTO=-0.7 KP=60u LAMBDA=0.02)
+
+
+* 6) TRANSISTOR-LEVEL STANDARD-CELL LIBRARY
+
+* Inverter
+* Pin order: IN OUT VDD VSS
+.subckt INV IN OUT VDD VSS
+MP1 OUT IN VDD VDD PMOS W=80u L=4u
+MN1 OUT IN VSS VSS NMOS W=40u L=4u
+.ends INV
+
+
+* Two-input NAND. Series NMOS devices are widened.
+* Pin order: A B Y VDD VSS
+.subckt NAND2 A B Y VDD VSS
+MP1 Y A VDD VDD PMOS W=80u L=4u
+MP2 Y B VDD VDD PMOS W=80u L=4u
+MN1 Y A NINT VSS NMOS W=80u L=4u
+MN2 NINT B VSS VSS NMOS W=80u L=4u
+.ends NAND2
+
+
+* AND = NAND + inverter
+* Pin order: A B Y VDD VSS
+.subckt AND2 A B Y VDD VSS
+XNAND A B N_NAND VDD VSS NAND2
+XINV N_NAND Y VDD VSS INV
+.ends AND2
+
+
+* Two-input NOR. Series PMOS devices are widened.
+* Pin order: A B Y VDD VSS
+.subckt NOR2 A B Y VDD VSS
+MP1 NPU A VDD VDD PMOS W=160u L=4u
+MP2 Y B NPU VDD PMOS W=160u L=4u
+MN1 Y A VSS VSS NMOS W=40u L=4u
+MN2 Y B VSS VSS NMOS W=40u L=4u
+.ends NOR2
+
+
+* OR = NOR + inverter
+* Pin order: A B Y VDD VSS
+.subckt OR2 A B Y VDD VSS
+XNOR A B N_NOR VDD VSS NOR2
+XINV N_NOR Y VDD VSS INV
+.ends OR2
+
+
+* XOR from four NAND gates
+* Pin order: A B Y VDD VSS
+.subckt XOR2 A B Y VDD VSS
+XN1 A B N1 VDD VSS NAND2
+XN2 A N1 N2 VDD VSS NAND2
+XN3 B N1 N3 VDD VSS NAND2
+XN4 N2 N3 Y VDD VSS NAND2
+.ends XOR2
+
+
+* XNOR = XOR + inverter
+* Pin order: A B Y VDD VSS
+.subckt XNOR2 A B Y VDD VSS
+XXOR A B N_XOR VDD VSS XOR2
+XINV N_XOR Y VDD VSS INV
+.ends XNOR2
+
+
+* 2:1 multiplexer
+* Y=A when S=0; Y=B when S=1
+* Pin order: A B S Y VDD VSS
+.subckt MUX2 A B S Y VDD VSS
+XINV_S S S_B VDD VSS INV
+XAND_A A S_B N_A VDD VSS AND2
+XAND_B B S N_B VDD VSS AND2
+XOR_OUT N_A N_B Y VDD VSS OR2
+.ends MUX2
+
+
+* Full adder
+* Pin order: A B CIN SUM COUT VDD VSS
+.subckt FULLADDER A B CIN SUM COUT VDD VSS
+XXOR1 A B P VDD VSS XOR2
+XXOR2 P CIN SUM VDD VSS XOR2
+XAND1 A B C1 VDD VSS AND2
+XAND2 P CIN C2 VDD VSS AND2
+XOR1 C1 C2 COUT VDD VSS OR2
+.ends FULLADDER
+
+
+* Active-high transmission-gate D latch.
+* ENB must be the complement of EN.
+* Pin order: D Q EN ENB VDD VSS
+.subckt DLATCH_TG D Q EN ENB VDD VSS
+* Input path active while EN=1.
+MIN NSTORE EN D VSS NMOS W=40u L=4u
+MIP NSTORE ENB D VDD PMOS W=80u L=4u
+
+* Two inverters restore full logic levels.
+XINV1 NSTORE NMID VDD VSS INV
+XINV2 NMID Q VDD VSS INV
+
+* Feedback path active while EN=0.
+MFN NSTORE ENB Q VSS NMOS W=40u L=4u
+MFP NSTORE EN Q VDD PMOS W=80u L=4u
+
+* Small physical storage and numerical-convergence aids.
+CSTORE NSTORE VSS 5f
+CMID NMID VSS 5f
+RQ Q VSS 1T
+.ends DLATCH_TG
+
+
+* Positive-edge-triggered master/slave D flip-flop.
+* Master is transparent while CLK=0; slave is transparent while CLK=1.
+* Pin order: D Q CLK VDD VSS
+.subckt DFF D Q CLK VDD VSS
+XINV_CLK CLK CLKB VDD VSS INV
+XMASTER D QM CLKB CLK VDD VSS DLATCH_TG
+XSLAVE QM Q CLK CLKB VDD VSS DLATCH_TG
+CMASTER QM VSS 5f
+.ends DFF
+
+.end
